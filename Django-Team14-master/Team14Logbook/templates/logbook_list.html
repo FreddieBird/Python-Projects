@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div>
+
+  <div class="col-sm-6 col-sm-offset-3">
+    <div class="page-header">
+      <h1>{{ title }}</h1>
+    </div>
+
+    <form method='GET' action=''>
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="input-group">
+            <input type="text" name='q' class="form-control" placeholder="Search posts*..." value='{{ request.GET.q }}'>
+            <span class="input-group-btn">
+            <button class="btn btn-default" type="button">Go!</button>
+            </span>
+          </div><!-- /input-group -->
+          <p style="color: #777777;"><em>*Filter Log entries by their categories, author and title.</em></p>
+        </div><!-- /.col-lg-6 -->
+      </div><!-- /.row -->
+    </form>
+    </br>
+
+    <div class="row">
+    {% for obj in object_list %}
+      <div class="col-sm-12">
+        <div class="thumbnail">
+          {% if obj.image %}
+            <img src='{{ obj.image.url }}' class='img-responsive' />
+          {% endif %}
+          <div class="caption">
+            <!-- <h3>{% if obj.publish > today %} <span style='color: #0DDC5D;'>Future Post {% endif %}</span></h3> -->
+            <div class="page-header">
+              <h3><a href='{{ obj.get_absolute_url }}'>{{ obj.title }}</a>
+              {% if obj.draft %}
+                <span class="label label-warning"> Draft</span>
+              {% endif %}
+              <small>{{ obj.publish }}</small></h3>
+              {% if obj.user.get_full_name %}
+                <p><span style='color: #777777;'>Author: {{ obj.user.get_full_name }}</span></p>
+                <p><span style='color: #777777;'>Category: {{ obj.category }}</span></p>
+              {% endif %}
+              </p>
+            </div>
+            <p>{{ obj.content|linebreaks|truncatechars:40 }}</p>
+            <p><a href="{{ obj.get_absolute_url }}" class="btn btn-primary" role="button">View</a></p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+  </div>
+
+  <footer style="position: fixed; bottom: 0; width: 100%; margin-left: 70%;">
+  <div class="pagination pager">
+    <span class="step-links">
+        {% if object_list.has_previous %}
+            <a href="?{{ page_request_var }}={{ object_list.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></a>
+        {% endif %}
+
+        <span class="current">
+            <strong><em>Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}</em></strong>
+        </span>
+
+        {% if object_list.has_next %}
+            <a href="?{{ page_request_var }}={{ object_list.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></a>
+        {% endif %}
+    </span>
+  </div>
+</footer>
+
+{% endblock content %}
